@@ -56,3 +56,33 @@ problems.reporter.report(
 
 // build logic (build script, buildSrc, build-logic, local plugin, binary plugin) uses plugin API that uses deprecated Gradle API
 
+//// Incubation
+
+// incubating Gradle features is being used
+
+//// Dependency management
+
+//// Publications
+
+//// Signing
+
+//// Static checkers and linting
+
+// checkstyle
+
+// codenarc error
+
+// android linter reports
+
+// pmd 
+
+//// Testing
+
+// Junit 4 test failure
+
+// TestNG test failure
+
+// Junit platform test failure
+
+//// Packaging
+
