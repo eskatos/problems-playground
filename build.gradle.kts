@@ -20,3 +20,21 @@ problems.reporter.report(
 ) {
     contextualLabel("This is not a dependency")
 }
+
+// Java compilation - warning related to code being compiled
+
+// Java compilation - error related to code being compiled
+
+// Java compilation - compiler configured to use deprecated feature
+
+// Java compilation - compiler cannot be invoked (binary not found, process segfaults,etc.)
+
+// Kotlin compilation - warning related to code being compiled
+
+// Kotlin compilation - error related to code being compiled
+
+// Kotlin compilation - compiler configured to use deprecated feature
+
+// Kotlin compilation - compiler cannot be invoked (binary not found, process segfaults,etc.)
+
+
