@@ -9,36 +9,47 @@ val problems = objects.newInstance(Services::class).problems
 // ============================================================================
 // ROOT GROUPS
 // ============================================================================
-val rootVerification = ProblemGroup.create("verification", "Verification")
-val rootDependencies = ProblemGroup.create("dependencies", "Dependencies")
-
 val compilationGroup = ProblemGroup.create("compilation", "Compilation")
 val verificationGroup = ProblemGroup.create("verification", "Verification")
 val dependenciesGroup = ProblemGroup.create("dependencies", "Dependencies")
 val configurationGroup = ProblemGroup.create("configuration", "Configuration")
 val environmentGroup = ProblemGroup.create("environment", "Environment")
 val deprecationGroup = ProblemGroup.create("deprecation", "Deprecation")
+val invocationGroup = ProblemGroup.create("invocation", "Invocation")
 val miscellaneousGroup = ProblemGroup.create("miscellaneous", "Miscellaneous")
 
-val dependencyVariantResolutionGroup = ProblemGroup.create("dependency-variant-resolution", "Dependency variant resolution")
+
+// Sub groups
+val javaGroup = ProblemGroup.create("java", "Java", compilationGroup)
+val kotlinGroup = ProblemGroup.create("kotlin", "Kotlin", compilationGroup)
+val cppGroup = ProblemGroup.create("cpp", "C++", compilationGroup)
+
+val unitTestGroup = ProblemGroup.create("unit-test", "Unit Tests", verificationGroup)
+val integrationTestGroup = ProblemGroup.create("integration-test", "Integration Tests", verificationGroup)
+val checkstyleGroup = ProblemGroup.create("checkstyle", "Checkstyle", verificationGroup)
+val spotbugsGroup = ProblemGroup.create("spotbugs", "SpotBugs", verificationGroup)
+val codeCoverageGroup = ProblemGroup.create("code-coverage", "Code Coverage", verificationGroup)
+val lintingGroup = ProblemGroup.create("linting", "Linting", verificationGroup)
+val securityScanGroup = ProblemGroup.create("security-scan", "Security Scan", verificationGroup)
+
+val dependencyResolutionGroup = ProblemGroup.create("resolution", "Dependency Resolution", dependenciesGroup)
+val dependencyVerificationGroup = ProblemGroup.create("verification", "Dependency Verification", dependenciesGroup)
+val versionCatalogGroup = ProblemGroup.create("version-catalog", "Version Catalog", dependenciesGroup)
+val variantResolutionGroup = ProblemGroup.create("variant-resolution", "Variant Resolution", dependenciesGroup)
+
+val buildScriptGroup = ProblemGroup.create("build-script", "Build Script", configurationGroup)
+val propertyValidationGroup = ProblemGroup.create("property-validation", "Property Validation", configurationGroup)
+
+val missingToolsGroup = ProblemGroup.create("jdk", "JDK", environmentGroup)
+val networkGroup = ProblemGroup.create("network", "Network", environmentGroup)
+val filesystemGroup = ProblemGroup.create("filesystem", "Filesystem", environmentGroup)
+
+
 // ============================================================================
 // COMPILATION PROBLEMS
 // ============================================================================
 
-problems.reporter.report(
-    ProblemId.create("foo", "Some verif", rootVerification)
-) {
-    contextualLabel("This is wrong")
-}
-
-problems.reporter.report(
-    ProblemId.create("foo", "Some dep", rootDependencies)
-) {
-    contextualLabel("This is not a dependency")
-}
-
 //Compilation: Java: Unused variable
-val javaGroup = ProblemGroup.create("java", "Java", compilationGroup)
 problems.reporter.report(
     ProblemId.create("unused-variable", "Unused variable", javaGroup)
 ) {
@@ -64,7 +75,6 @@ problems.reporter.report(
 }
 
 // Compilation: Kotlin
-val kotlinGroup = ProblemGroup.create("kotlin", "Kotlin", compilationGroup)
 problems.reporter.report(
     ProblemId.create("unresolved-reference", "Unresolved reference", kotlinGroup)
 ) {
@@ -74,7 +84,6 @@ problems.reporter.report(
 }
 
 // Compilation: C++
-val cppGroup = ProblemGroup.create("cpp", "C++", compilationGroup)
 problems.reporter.report(
     ProblemId.create("missing-header", "Missing header file", cppGroup)
 ) {
@@ -88,7 +97,6 @@ problems.reporter.report(
 // ============================================================================
 
 // Verification: Unit Tests
-val unitTestGroup = ProblemGroup.create("unit-test", "Unit Tests", verificationGroup)
 problems.reporter.report(
     ProblemId.create("test-failure", "Test failure", unitTestGroup)
 ) {
@@ -98,7 +106,6 @@ problems.reporter.report(
 }
 
 // Verification: Integration Tests
-val integrationTestGroup = ProblemGroup.create("integration-test", "Integration Tests", verificationGroup)
 problems.reporter.report(
     ProblemId.create("integration-test-timeout", "Integration test timeout", integrationTestGroup)
 ) {
@@ -111,7 +118,6 @@ problems.reporter.report(
 
 // should the tool name be in a group?
 // is that already namespacing?
-val checkstyleGroup = ProblemGroup.create("checkstyle", "Checkstyle", verificationGroup)
 problems.reporter.report(
     ProblemId.create("missing-javadoc", "Missing Javadoc", checkstyleGroup)
 ) {
@@ -121,7 +127,6 @@ problems.reporter.report(
 }
 
 // Verification: Static Analysis (SpotBugs)
-val spotbugsGroup = ProblemGroup.create("spotbugs", "SpotBugs", verificationGroup)
 problems.reporter.report(
     ProblemId.create("null-pointer-dereference", "Possible null pointer dereference", spotbugsGroup)
 ) {
@@ -131,7 +136,6 @@ problems.reporter.report(
 }
 
 // Verification: Code Coverage
-val codeCoverageGroup = ProblemGroup.create("code-coverage", "Code Coverage", verificationGroup)
 problems.reporter.report(
     ProblemId.create("coverage-threshold-not-met", "Coverage threshold not met", codeCoverageGroup)
 ) {
@@ -140,7 +144,6 @@ problems.reporter.report(
 }
 
 // Verification: Linting
-val lintingGroup = ProblemGroup.create("linting", "Linting", verificationGroup)
 problems.reporter.report(
     ProblemId.create("unused-import", "Unused import", lintingGroup)
 ) {
@@ -150,7 +153,6 @@ problems.reporter.report(
 }
 
 // Verification: Security Scan
-val securityScanGroup = ProblemGroup.create("security-scan", "Security Scan", verificationGroup)
 problems.reporter.report(
     ProblemId.create("vulnerability-detected", "Security vulnerability detected", securityScanGroup)
 ) {
@@ -163,7 +165,6 @@ problems.reporter.report(
 // ============================================================================
 
 // Dependencies: Resolution
-val dependencyResolutionGroup = ProblemGroup.create("resolution", "Dependency Resolution", dependenciesGroup)
 problems.reporter.report(
     ProblemId.create("artifact-not-found", "Artifact not found", dependencyResolutionGroup)
 ) {
@@ -173,7 +174,6 @@ problems.reporter.report(
 }
 
 // Dependencies: Verification
-val dependencyVerificationGroup = ProblemGroup.create("verification", "Dependency Verification", dependenciesGroup)
 problems.reporter.report(
     ProblemId.create("checksum-mismatch", "Checksum mismatch", dependencyVerificationGroup)
 ) {
@@ -182,7 +182,6 @@ problems.reporter.report(
 }
 
 // Dependencies: Version Catalog
-val versionCatalogGroup = ProblemGroup.create("version-catalog", "Version Catalog", dependenciesGroup)
 problems.reporter.report(
     ProblemId.create("alias-not-finished", "Dependency alias builder not finished", versionCatalogGroup)
 ) {
@@ -192,7 +191,6 @@ problems.reporter.report(
 }
 
 // Dependencies: Variant Resolution
-val variantResolutionGroup = ProblemGroup.create("variant-resolution", "Variant Resolution", dependenciesGroup)
 problems.reporter.report(
     ProblemId.create("no-matching-variant", "No matching variant found", variantResolutionGroup)
 ) {
@@ -205,7 +203,6 @@ problems.reporter.report(
 // ============================================================================
 
 // Configuration: Build Script
-val buildScriptGroup = ProblemGroup.create("build-script", "Build Script", configurationGroup)
 problems.reporter.report(
     ProblemId.create("invalid-syntax", "Script compilation error", buildScriptGroup)
 ) {
@@ -214,7 +211,6 @@ problems.reporter.report(
 }
 
 // Configuration: Property Validation
-val propertyValidationGroup = ProblemGroup.create("property-validation", "Property Validation", configurationGroup)
 problems.reporter.report(
     ProblemId.create("cannot-use-optional-on-primitive-types", "Property should be annotated with @Optional", propertyValidationGroup)
 ) {
@@ -224,9 +220,8 @@ problems.reporter.report(
 }
 
 // Existing: Dependency version catalog: Alias not finished
-val dependencyVersionCatalogGroup = ProblemGroup.create("dependency-version-catalog", "version catalog")
 problems.reporter.report(
-    ProblemId.create("alias-not-finished", "Dependency alias builder was not finished", dependencyVersionCatalogGroup)
+    ProblemId.create("alias-not-finished", "Dependency alias builder was not finished", versionCatalogGroup)
 ) {
     contextualLabel("Dependency alias 'myLib' was not finished with a version or reference")
     solution("Call .version() or .versionRef() on the alias builder")
@@ -234,12 +229,17 @@ problems.reporter.report(
 }
 
 // Existing: Task selection: Ambiguous matches
-val taskSelectionGroup = ProblemGroup.create("task-selection", "Task selection")
 problems.reporter.report(
-    ProblemId.create("ambiguous-matches", "Ambiguous task matches", taskSelectionGroup)
+    ProblemId.create("ambiguous-matches", "Ambiguous task matches", invocationGroup)
 ) {
     contextualLabel("Task name 'test' matches multiple tasks: ':test', ':integrationTest'")
     solution("Use the full task path to disambiguate")
+}
+problems.reporter.report(
+    ProblemId.create("invalid-task-option-value", "Invalid task option value", invocationGroup)
+) {
+    contextualLabel("Task ':test' option 'tests' expects a test name glob")
+    solution("Use a valid test name glob as the 'tests' option for the ':test' task")
 }
 
 // ============================================================================
@@ -247,7 +247,6 @@ problems.reporter.report(
 // ============================================================================
 
 // Environment: Missing Tools
-val missingToolsGroup = ProblemGroup.create("jdk", "JDK", environmentGroup)
 problems.reporter.report(
     ProblemId.create("jdk-not-found", "Could not execute build using connection to Gradle installation", missingToolsGroup)
 ) {
@@ -257,7 +256,6 @@ problems.reporter.report(
 }
 
 // Environment: Network
-val networkGroup = ProblemGroup.create("network", "Network", environmentGroup)
 problems.reporter.report(
     ProblemId.create("connection-timeout", "Connection timeout", networkGroup)
 ) {
@@ -266,7 +264,6 @@ problems.reporter.report(
 }
 
 // Environment: Filesystem
-val filesystemGroup = ProblemGroup.create("filesystem", "Filesystem", environmentGroup)
 problems.reporter.report(
     ProblemId.create("permission-denied", "Permission denied", filesystemGroup)
 ) {
@@ -288,11 +285,12 @@ problems.reporter.report(
 
 // Existing: Dependency variant resolution: Unknown artifact selection failure
 problems.reporter.report(
-    ProblemId.create("unknown-artifact-selection-failure", "Unknown artifact selection failure", dependencyVariantResolutionGroup)
+    ProblemId.create("unknown-artifact-selection-failure", "Unknown artifact selection failure", dependencyResolutionGroup)
 ) {
     contextualLabel("Failed to resolve artifact for dependency 'com.example:library:1.0'")
     solution("Check that the dependency exists and the repository is configured correctly")
     lineInFileLocation("build.gradle.kts", 45, 4)
+    lineInFileLocation("build.gradle.kts", 23, 12)
 }
 
 // Existing Deprecation: Executing Gradle on JVM versions and lower
