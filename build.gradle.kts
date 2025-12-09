@@ -276,11 +276,11 @@ problems.reporter.report(
 // ============================================================================
 
 problems.reporter.report(
-    ProblemId.create("deprecated-api-usage", "Deprecated API usage", deprecationGroup)
+    ProblemId.create("org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes()", "org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes() is deprecated", deprecationGroup)
 ) {
-    contextualLabel("Using deprecated API: Task.project property access at execution time")
-    solution("Access project properties at configuration time instead")
-    lineInFileLocation("build.gradle.kts", 78, 12)
+    contextualLabel("Using deprecated API: org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes() will be deprecated and removed in Gradle 10")
+    solution("Use DistributionType#values() directly")
+    stackLocation() // the problem is exactly at the place in the codebase the place where the report is reported
 }
 
 // Existing: Dependency variant resolution: Unknown artifact selection failure
