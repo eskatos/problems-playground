@@ -1,7 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 interface Services {
-    @get:Inject val problems: Problems
+    @get:Inject
+    val problems: Problems
 }
 
 val problems = objects.newInstance(Services::class).problems
@@ -12,9 +13,9 @@ val problems = objects.newInstance(Services::class).problems
 val compilationGroup = ProblemGroup.create("compilation", "Compilation")
 val verificationGroup = ProblemGroup.create("verification", "Verification")
 val dependenciesGroup = ProblemGroup.create("dependencies", "Dependencies")
-val configurationGroup = ProblemGroup.create("configuration", "Configuration")
+val configurationGroup = ProblemGroup.create("configuration", "Build Configuration")
 val environmentGroup = ProblemGroup.create("environment", "Environment")
-val deprecationGroup = ProblemGroup.create("deprecation", "Deprecation")
+val deprecationGroup = ProblemGroup.create("deprecation", "Build Deprecation")
 val invocationGroup = ProblemGroup.create("invocation", "Invocation")
 val miscellaneousGroup = ProblemGroup.create("miscellaneous", "Miscellaneous")
 
@@ -50,12 +51,14 @@ val filesystemGroup = ProblemGroup.create("filesystem", "Filesystem", environmen
 // ============================================================================
 
 //Compilation: Java: Unused variable
-problems.reporter.report(
-    ProblemId.create("unused-variable", "Unused variable", javaGroup)
-) {
-    contextualLabel("Variable 'x' is never used")
-    solution("Remove the unused variable")
-    lineInFileLocation("src/main/java/com/example/MyClass.java", 42, 8)
+repeat(12) { idx ->
+    problems.reporter.report(
+        ProblemId.create("unused-variable", "Unused variable", javaGroup)
+    ) {
+        contextualLabel("Variable 'x$idx' is never used")
+        solution("Remove the unused variable")
+        lineInFileLocation("src/main/java/com/example/MyClass.java", 42 + idx, 8)
+    }
 }
 
 problems.reporter.report(
@@ -212,7 +215,11 @@ problems.reporter.report(
 
 // Configuration: Property Validation
 problems.reporter.report(
-    ProblemId.create("cannot-use-optional-on-primitive-types", "Property should be annotated with @Optional", propertyValidationGroup)
+    ProblemId.create(
+        "cannot-use-optional-on-primitive-types",
+        "Property should be annotated with @Optional",
+        propertyValidationGroup
+    )
 ) {
     contextualLabel("Property 'myProperty' of primitive type should be annotated with @Optional")
     solution("Add @Optional annotation to the property")
@@ -248,10 +255,16 @@ problems.reporter.report(
 
 // Environment: Missing Tools
 problems.reporter.report(
-    ProblemId.create("jdk-not-found", "Could not execute build using connection to Gradle installation", missingToolsGroup)
+    ProblemId.create(
+        "jdk-not-found",
+        "Could not execute build using connection to Gradle installation",
+        missingToolsGroup
+    )
 ) {
-    contextualLabel("Could not execute build using connection to Gradle installation '/Users/reinholddegenfellner/IdeaProjects/gradle-resilient/packaging/distributions-full/build/bin distribution'." +
-            "Gradle requires JVM 17 or later to run. Your build is currently configured to use JVM 8.")
+    contextualLabel(
+        "Could not execute build using connection to Gradle installation '/Users/reinholddegenfellner/IdeaProjects/gradle-resilient/packaging/distributions-full/build/bin distribution'." +
+                "Gradle requires JVM 17 or later to run. Your build is currently configured to use JVM 8."
+    )
     solution("Install JDK 17 or configure the path to an existing installation")
 }
 
@@ -285,7 +298,11 @@ problems.reporter.report(
 
 // Existing: Dependency variant resolution: Unknown artifact selection failure
 problems.reporter.report(
-    ProblemId.create("unknown-artifact-selection-failure", "Unknown artifact selection failure", dependencyResolutionGroup)
+    ProblemId.create(
+        "unknown-artifact-selection-failure",
+        "Unknown artifact selection failure",
+        dependencyResolutionGroup
+    )
 ) {
     contextualLabel("Failed to resolve artifact for dependency 'com.example:library:1.0'")
     solution("Check that the dependency exists and the repository is configured correctly")
@@ -295,7 +312,11 @@ problems.reporter.report(
 
 // Existing Deprecation: Executing Gradle on JVM versions and lower
 problems.reporter.report(
-    ProblemId.create("executing-gradle-on-jvm-versions-and-lower", "Executing Gradle on JVM versions and lower is deprecated", deprecationGroup)
+    ProblemId.create(
+        "executing-gradle-on-jvm-versions-and-lower",
+        "Executing Gradle on JVM versions and lower is deprecated",
+        deprecationGroup
+    )
 ) {
     contextualLabel("Executing Gradle on JVM 8 is deprecated and will be removed in Gradle 10.0")
     solution("Update to JVM 11 or higher")
@@ -313,7 +334,7 @@ problems.reporter.report(
 }
 
 problems.reporter.report(
-    ProblemId.create("task-selection-ambiguous", "Ambiguous matches", miscellaneousGroup)
+    ProblemId.create("task-selection-ambiguous", "Ambiguous matches", invocationGroup)
 ) {
     contextualLabel("Cannot locate tasks that match ':ba' as task 'ba' is ambiguous in root project 'root'. Candidates are: 'bar', 'baz'.")
     solution("Use the full task path to disambiguate")
