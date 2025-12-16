@@ -17,7 +17,7 @@ val configurationGroup = ProblemGroup.create("configuration", "Build Configurati
 val environmentGroup = ProblemGroup.create("environment", "Environment")
 val deprecationGroup = ProblemGroup.create("deprecation", "Build Deprecation")
 val invocationGroup = ProblemGroup.create("invocation", "Invocation")
-val miscellaneousGroup = ProblemGroup.create("miscellaneous", "Miscellaneous")
+val othersGroup = ProblemGroup.create("others", "Others")
 
 
 // Sub groups
@@ -25,13 +25,12 @@ val javaGroup = ProblemGroup.create("java", "Java", compilationGroup)
 val kotlinGroup = ProblemGroup.create("kotlin", "Kotlin", compilationGroup)
 val cppGroup = ProblemGroup.create("cpp", "C++", compilationGroup)
 
-val unitTestGroup = ProblemGroup.create("unit-test", "Unit Tests", verificationGroup)
-val integrationTestGroup = ProblemGroup.create("integration-test", "Integration Tests", verificationGroup)
-val checkstyleGroup = ProblemGroup.create("checkstyle", "Checkstyle", verificationGroup)
-val spotbugsGroup = ProblemGroup.create("spotbugs", "SpotBugs", verificationGroup)
+val testingGroup = ProblemGroup.create("testing", "Testing", verificationGroup)
+val staticAnalysisGroup = ProblemGroup.create("static-analysis", "Static Analysis", verificationGroup)
 val codeCoverageGroup = ProblemGroup.create("code-coverage", "Code Coverage", verificationGroup)
 val lintingGroup = ProblemGroup.create("linting", "Linting", verificationGroup)
-val securityScanGroup = ProblemGroup.create("security-scan", "Security Scan", verificationGroup)
+val securityGroup = ProblemGroup.create("security", "Security", verificationGroup)
+val otherVerificationsGroup = ProblemGroup.create("others", "Others", verificationGroup)
 
 val dependencyResolutionGroup = ProblemGroup.create("resolution", "Dependency Resolution", dependenciesGroup)
 val dependencyVerificationGroup = ProblemGroup.create("verification", "Dependency Verification", dependenciesGroup)
@@ -101,7 +100,7 @@ problems.reporter.report(
 
 // Verification: Unit Tests
 problems.reporter.report(
-    ProblemId.create("test-failure", "Test failure", unitTestGroup)
+    ProblemId.create("test-failure", "Test failure", testingGroup)
 ) {
     contextualLabel("Test 'shouldCalculateCorrectly' failed: expected 42 but was 43")
     solution("Fix the test implementation or the code under test")
@@ -110,7 +109,7 @@ problems.reporter.report(
 
 // Verification: Integration Tests
 problems.reporter.report(
-    ProblemId.create("integration-test-timeout", "Integration test timeout", integrationTestGroup)
+    ProblemId.create("integration-test-timeout", "Integration test timeout", testingGroup)
 ) {
     contextualLabel("Test 'shouldConnectToDatabase' timed out after 30 seconds")
     solution("Increase timeout or optimize the test")
@@ -122,7 +121,7 @@ problems.reporter.report(
 // should the tool name be in a group?
 // is that already namespacing?
 problems.reporter.report(
-    ProblemId.create("missing-javadoc", "Missing Javadoc", checkstyleGroup)
+    ProblemId.create("missing-javadoc", "Missing Javadoc", staticAnalysisGroup)
 ) {
     contextualLabel("Missing Javadoc comment for public method 'calculate'")
     solution("Add Javadoc comment to the method")
@@ -131,7 +130,7 @@ problems.reporter.report(
 
 // Verification: Static Analysis (SpotBugs)
 problems.reporter.report(
-    ProblemId.create("null-pointer-dereference", "Possible null pointer dereference", spotbugsGroup)
+    ProblemId.create("null-pointer-dereference", "Possible null pointer dereference", staticAnalysisGroup)
 ) {
     contextualLabel("Possible null pointer dereference in com.example.MyClass.process()")
     solution("Add null check before accessing the variable")
@@ -155,12 +154,20 @@ problems.reporter.report(
     lineInFileLocation("src/main/java/com/example/MyClass.java", 3, 0)
 }
 
-// Verification: Security Scan
+// Verification: Security
 problems.reporter.report(
-    ProblemId.create("vulnerability-detected", "Security vulnerability detected", securityScanGroup)
+    ProblemId.create("vulnerability-detected", "Security vulnerability detected", securityGroup)
 ) {
     contextualLabel("High severity vulnerability in dependency org.example:vulnerable-lib:1.0.0 (CVE-2023-12345)")
     solution("Update to version 1.0.1 or higher")
+}
+
+// Verification: Others
+problems.reporter.report(
+    ProblemId.create("something-else", "Something else", otherVerificationsGroup)
+) {
+    contextualLabel("There's a verification failure somewhere")
+    solution("Draw the rest of the owl")
 }
 
 // ============================================================================
@@ -327,7 +334,7 @@ problems.reporter.report(
 // ============================================================================
 
 problems.reporter.report(
-    ProblemId.create("unknown-error", "Unknown error", miscellaneousGroup)
+    ProblemId.create("unknown-error", "Unknown error", othersGroup)
 ) {
     contextualLabel("An unexpected error occurred during build execution")
     solution("Check the build logs for more details")
@@ -341,7 +348,7 @@ problems.reporter.report(
 }
 
 problems.reporter.report(
-    ProblemId.create("custom-failure", "Custom failure", miscellaneousGroup)
+    ProblemId.create("custom-failure", "Custom failure", othersGroup)
 ) {
     contextualLabel("Custom build validation failed: Project must have a README.md file")
     solution("Add a README.md file to the project root")
