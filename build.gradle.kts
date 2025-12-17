@@ -1,5 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+plugins {
+    id("base")
+}
+
 interface Services {
     @get:Inject
     val problems: Problems
@@ -17,14 +21,21 @@ val configurationGroup = ProblemGroup.create("configuration", "Build Configurati
 val environmentGroup = ProblemGroup.create("environment", "Environment")
 val deprecationGroup = ProblemGroup.create("deprecation", "Build Deprecation")
 val invocationGroup = ProblemGroup.create("invocation", "Invocation")
+val documentationGroup = ProblemGroup.create("documentation", "Documentation")
+val packagingGroup = ProblemGroup.create("packaging", "Packaging")
+val deploymentGroup = ProblemGroup.create("deployment", "Deployment")
 val othersGroup = ProblemGroup.create("others", "Others")
 
 
 // Sub groups
+
+// Compilation
 val javaGroup = ProblemGroup.create("java", "Java", compilationGroup)
 val kotlinGroup = ProblemGroup.create("kotlin", "Kotlin", compilationGroup)
 val cppGroup = ProblemGroup.create("cpp", "C++", compilationGroup)
+val othersCompilationGroup = ProblemGroup.create("others", "Others", compilationGroup)
 
+// Verification
 val testingGroup = ProblemGroup.create("testing", "Testing", verificationGroup)
 val staticAnalysisGroup = ProblemGroup.create("static-analysis", "Static Analysis", verificationGroup)
 val codeCoverageGroup = ProblemGroup.create("code-coverage", "Code Coverage", verificationGroup)
@@ -32,17 +43,21 @@ val lintingGroup = ProblemGroup.create("linting", "Linting", verificationGroup)
 val securityGroup = ProblemGroup.create("security", "Security", verificationGroup)
 val otherVerificationsGroup = ProblemGroup.create("others", "Others", verificationGroup)
 
+// Dependencies
 val dependencyResolutionGroup = ProblemGroup.create("resolution", "Dependency Resolution", dependenciesGroup)
 val dependencyVerificationGroup = ProblemGroup.create("verification", "Dependency Verification", dependenciesGroup)
 val versionCatalogGroup = ProblemGroup.create("version-catalog", "Version Catalog", dependenciesGroup)
 val variantResolutionGroup = ProblemGroup.create("variant-resolution", "Variant Resolution", dependenciesGroup)
 
+// Configuration
 val buildScriptGroup = ProblemGroup.create("build-script", "Build Script", configurationGroup)
 val propertyValidationGroup = ProblemGroup.create("property-validation", "Property Validation", configurationGroup)
 
-val missingToolsGroup = ProblemGroup.create("jdk", "JDK", environmentGroup)
+// Environment
+val systemGroup = ProblemGroup.create("system", "System", environmentGroup)
 val networkGroup = ProblemGroup.create("network", "Network", environmentGroup)
 val filesystemGroup = ProblemGroup.create("filesystem", "Filesystem", environmentGroup)
+val othersEnvironmentGroup = ProblemGroup.create("others", "Others", environmentGroup)
 
 
 // ============================================================================
@@ -93,6 +108,15 @@ problems.reporter.report(
     solution("Ensure the C++ standard library is properly configured")
     lineInFileLocation("src/main/cpp/main.cpp", 1, 0)
 }
+
+// compilation: Others
+problems.reporter.report(
+    ProblemId.create("other", "Other compilation problem", othersCompilationGroup)
+) {
+    contextualLabel("The Dolorean is out of fuel")
+    solution("Put some banana peel in the Dolorean")
+}
+
 
 // ============================================================================
 // VERIFICATION PROBLEMS
@@ -250,11 +274,29 @@ problems.reporter.report(
     solution("Use the full task path to disambiguate")
 }
 problems.reporter.report(
+    ProblemId.create("ambiguous-matches", "Ambiguous task matches", invocationGroup)
+) {
+    contextualLabel("Cannot locate tasks that match ':ba' as task 'ba' is ambiguous in root project 'root'. Candidates are: 'bar', 'baz'.")
+    solution("Use the full task path to disambiguate")
+}
+problems.reporter.report(
     ProblemId.create("invalid-task-option-value", "Invalid task option value", invocationGroup)
 ) {
     contextualLabel("Task ':test' option 'tests' expects a test name glob")
     solution("Use a valid test name glob as the 'tests' option for the ':test' task")
 }
+tasks.build {
+    doLast {
+        problems.reporter.report(
+            ProblemId.create("invocation-failure", "Failed to start external process", invocationGroup)
+        ) {
+            contextualLabel("Unable to start external process 'git'")
+            solution("Check the build logs")
+            lineInFileLocation("build.gradle.kts", 290, 8)
+        }
+    }
+}
+
 
 // ============================================================================
 // ENVIRONMENT PROBLEMS
@@ -265,7 +307,7 @@ problems.reporter.report(
     ProblemId.create(
         "jdk-not-found",
         "Could not execute build using connection to Gradle installation",
-        missingToolsGroup
+        systemGroup
     )
 ) {
     contextualLabel(
@@ -291,12 +333,24 @@ problems.reporter.report(
     solution("Ensure the user has write permissions to the directory")
 }
 
+// Environment: Others
+problems.reporter.report(
+    ProblemId.create("other", "Other environment problem", othersEnvironmentGroup)
+) {
+    contextualLabel("The Dolorean is out of fuel")
+    solution("Put some banana peel in the Dolorean")
+}
+
 // ============================================================================
 // DEPRECATION PROBLEMS
 // ============================================================================
 
 problems.reporter.report(
-    ProblemId.create("org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes()", "org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes() is deprecated", deprecationGroup)
+    ProblemId.create(
+        "org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes()",
+        "org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes() is deprecated",
+        deprecationGroup
+    )
 ) {
     contextualLabel("Using deprecated API: org.gradle.api.tasks.Wrapper#getAvailableDistributionTypes() will be deprecated and removed in Gradle 10")
     solution("Use DistributionType#values() directly")
@@ -330,7 +384,40 @@ problems.reporter.report(
 }
 
 // ============================================================================
-// MISCELLANEOUS PROBLEMS
+// DOCUMENTATION PROBLEMS
+// ============================================================================
+
+problems.reporter.report(
+    ProblemId.create("unknown-documentation-error", "Unknown documentation error", documentationGroup)
+) {
+    contextualLabel("An unexpected error occurred during documentation")
+    solution("Check the build logs for more details")
+}
+
+// ============================================================================
+// PACKAGING PROBLEMS
+// ============================================================================
+
+problems.reporter.report(
+    ProblemId.create("unknown-packaging-error", "Unknown packaging error", packagingGroup)
+) {
+    contextualLabel("An unexpected error occurred during packaging")
+    solution("Check the build logs for more details")
+}
+
+// ============================================================================
+// DEPLOYMENT PROBLEMS
+// ============================================================================
+
+problems.reporter.report(
+    ProblemId.create("unknown-documentation-error", "Unknown documentation error", deploymentGroup)
+) {
+    contextualLabel("An unexpected error occurred during deployment")
+    solution("Check the build logs for more details")
+}
+
+// ============================================================================
+// OTHER PROBLEMS
 // ============================================================================
 
 problems.reporter.report(
@@ -338,13 +425,6 @@ problems.reporter.report(
 ) {
     contextualLabel("An unexpected error occurred during build execution")
     solution("Check the build logs for more details")
-}
-
-problems.reporter.report(
-    ProblemId.create("task-selection-ambiguous", "Ambiguous matches", invocationGroup)
-) {
-    contextualLabel("Cannot locate tasks that match ':ba' as task 'ba' is ambiguous in root project 'root'. Candidates are: 'bar', 'baz'.")
-    solution("Use the full task path to disambiguate")
 }
 
 problems.reporter.report(
